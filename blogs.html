@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness Resources</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2F69A8;
+            --secondary-color: #5A6A7D;
+            --normal-color: #389758;
+            --underweight-color: #FFB347;
+            --overweight-color: #F87D39;
+            --obese-color: #E64C4C;
+            --light-color: #F7FAFC;
+            --dark-color: #343a40;
+            --font-family-primary: 'Montserrat', sans-serif;
+            --font-family-secondary: 'Poppins', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family-secondary);
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top left, rgba(255, 182, 193, 0.2), transparent 50%), 
+                        radial-gradient(circle at bottom right, rgba(135, 206, 250, 0.2), transparent 50%);
+            z-index: -1;
+            animation: background-glow 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes background-glow {
+            0% {
+                background-position: 0% 0%;
+            }
+            100% {
+                background-position: 100% 100%;
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #4F86F7);
+            color: white;
+            padding: 3rem 0;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-family: var(--font-family-primary);
+            font-weight: 700;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .content-section {
+            flex-grow: 1;
+            padding: 2rem 0 5rem 0;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 2rem;
+            background-color: white;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-img-top {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            font-family: var(--font-family-primary);
+            font-weight: 600;
+            color: white;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .status-title {
+            font-family: var(--font-family-primary);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-buttons .btn {
+            font-weight: 600;
+            transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+            border-radius: 50px;
+        }
+
+        .filter-buttons .btn.active {
+            transform: scale(1.05);
+            font-weight: 700;
+            color: #fff !important;
+        }
+        
+        /* New CSS for button visibility and hover effects */
+        .btn-outline-warning {
+            border-color: var(--underweight-color);
+            color: var(--underweight-color) !important;
+        }
+        .btn-outline-warning:hover {
+            background-color: var(--underweight-color) !important;
+            color: white !important;
+        }
+
+        .btn-outline-success {
+            border-color: var(--normal-color);
+            color: var(--normal-color) !important;
+        }
+        .btn-outline-success:hover {
+            background-color: var(--normal-color) !important;
+            color: white !important;
+        }
+
+        .btn-outline-primary {
+            border-color: var(--overweight-color);
+            color: var(--overweight-color) !important;
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--overweight-color) !important;
+            color: white !important;
+        }
+
+        .btn-outline-danger {
+            border-color: var(--obese-color);
+            color: var(--obese-color) !important;
+        }
+        .btn-outline-danger:hover {
+            background-color: var(--obese-color) !important;
+            color: white !important;
+        }
+
+        .btn-outline-secondary {
+            border-color: var(--secondary-color);
+            color: var(--secondary-color) !important;
+        }
+        .btn-outline-secondary:hover {
+            background-color: var(--secondary-color) !important;
+            color: white !important;
+        }
+        
+        .card-body .btn {
+            border-radius: 50px;
+            font-weight: 600;
+            color: #fff !important;
+        }
+
+        footer {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            padding: 1.5rem 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .filter-buttons .btn {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="bmi.html">BMI Calculator</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="home.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="bmi.html">BMI Calculator</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="blogs.html">Blogs & Articles</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header class="header text-center">
+        <div class="container">
+            <h1>Wellness Hub</h1>
+            <p class="lead">Personalized blogs and articles for your health journey.</p>
+        </div>
+    </header>
+
+    <main class="content-section">
+        <div class="container">
+            <div class="d-flex justify-content-center flex-wrap gap-2 mb-4 filter-buttons">
+                <button class="btn btn-outline-secondary" data-status="all">All Resources</button>
+                <button class="btn btn-outline-warning" data-status="underweight">Underweight</button>
+                <button class="btn btn-outline-success" data-status="normal weight">Normal Weight</button>
+                <button class="btn btn-outline-primary" data-status="overweight">Overweight</button>
+                <button class="btn btn-outline-danger" data-status="obese">Obese</button>
+            </div>
+            <div id="content" class="row justify-content-center g-4"></div>
+            <div id="blogs-iframe-section" class="mt-5">
+                <h3 class="text-center mb-4" style="color: var(--primary-color); font-family: var(--font-family-primary); font-weight:700;">Read Articles Directly</h3>
+                <div class="row g-4" id="iframe-articles"></div>
+            </div>
+            <div class="modal fade" id="articleModal" tabindex="-1" aria-labelledby="articleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="articleModalLabel">Article</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-0" style="height:80vh;">
+                            <iframe id="articleIframe" src="" style="width:100%;height:100%;border:none;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-4 bg-dark text-white">
+        &copy; 2025 Wellness Hub. All Rights Reserved.
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const allResources = {
+            'all': {
+                title: 'General Health & Wellness Tips',
+                color: 'var(--secondary-color)',
+                resources: [
+                    { title: 'Healthy Diet Tips from WHO', url: 'https://www.who.int/news-room/fact-sheets/detail/healthy-diet', description: 'Expert advice on creating a balanced and healthy diet from the World Health Organization.', image: 'https://images.unsplash.com/photo-1542841491-a67b34b17e47?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+                    { title: 'Full Body Workout at Home', url: 'https://www.youtube.com/watch?v=aY-xP-kE5t4', description: 'A comprehensive video guide to a full-body workout you can do without leaving your home.', videoId: 'aY-xP-kE5t4' },
+                    { title: 'The Importance of Good Sleep', url: 'https://www.helpguide.org/articles/sleep/how-to-sleep-better.htm', description: 'Practical strategies and tips to improve your sleep hygiene for better overall health.', image: 'https://images.unsplash.com/photo-1542456041-995724217154?q=80&w=2862&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }
+                ]
+            },
+            'underweight': {
+                title: 'Resources for Underweight',
+                color: 'var(--underweight-color)',
+                resources: [
+                    { title: 'How to Gain Weight Safely', url: 'https://www.healthline.com/nutrition/how-to-gain-weight', description: 'A guide to safely and effectively increasing your body weight with a focus on healthy habits.', image: 'https://images.unsplash.com/photo-1628191081708-8e815617de87?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+                    { title: 'Healthy Weight Gain', url: 'https://www.youtube.com/watch?v=Q9bUe5vF1gY', description: 'Learn about nutrient-dense foods and exercise tips to support a healthy weight gain journey.', videoId: 'Q9bUe5vF1gY' },
+                    { title: 'Advice on Gaining Weight', url: 'https://www.medicalnewstoday.com/articles/321612', description: 'Expert advice on the right approach to gaining weight and when to seek professional help.', image: 'https://images.unsplash.com/photo-1579758782012-70b7937d57fe?q=80&w=2835&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }
+                ]
+            },
+            'normal weight': {
+                title: 'Resources for Maintaining a Healthy Weight',
+                color: 'var(--normal-color)',
+                resources: [
+                    { title: 'Tips for a Healthy Weight', url: 'https://www.cdc.gov/healthyweight/index.html', description: 'Official guidance from the CDC on maintaining a healthy weight through diet and physical activity.', image: 'https://images.unsplash.com/photo-1571019613454-1cb64b22301c?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+                    { title: 'Maintaining a Healthy Lifestyle', url: 'https://www.youtube.com/watch?v=Q4q3z0wG4qg', description: 'Video tips on how to build sustainable healthy habits for long-term well-being.', videoId: 'Q4q3z0wG4qg' },
+                    { title: 'Weight Management Tips', url: 'https://www.webmd.com/diet/ss/slideshow-weight-management-tips', description: 'A series of helpful tips and tricks for effective and lasting weight management.', image: 'https://images.unsplash.com/photo-1610486796989-136701f2ae62?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }
+                ]
+            },
+            'overweight': {
+                title: 'Resources for Overweight',
+                color: 'var(--overweight-color)',
+                resources: [
+                    { title: 'Healthy Weight Advice', url: 'https://www.nhs.uk/live-well/healthy-weight/', description: 'Practical advice from the NHS on managing your weight to reduce health risks.', image: 'https://images.unsplash.com/photo-1605333100366-2614b8a21571?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+                    { title: 'Effective Weight Loss Tips', url: 'https://www.youtube.com/watch?v=QF2FzN9U5zY', description: 'Expert-backed video advice on effective strategies for weight loss.', videoId: 'QF2FzN9U5zY' },
+                    { title: 'Safe Weight Loss Methods', url: 'https://www.webmd.com/diet/obesity/features/lose-weight-fast-how-to-do-it-safely', description: 'An in-depth article discussing safe and sustainable approaches to losing weight.', image: 'https://images.unsplash.com/photo-1605296839555-4a6c6d2c4b7b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }
+                ]
+            },
+            'obese': {
+                title: 'Resources for Obesity',
+                color: 'var(--obese-color)',
+                resources: [
+                    { title: 'Understanding Obesity', url: 'https://www.cdc.gov/obesity/index.html', description: 'Official information from the CDC about the causes, risks, and prevention of obesity.', image: 'https://images.unsplash.com/photo-1549419137-b67f2e15c327?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+                    { title: 'Managing Obesity', url: 'https://www.youtube.com/watch?v=QF2FzN9U5zY', description: 'A video guide providing strategies and information on managing obesity effectively.', videoId: 'QF2FzN9U5zY' },
+                    { title: 'Obesity Treatment & Management', url: 'https://www.mayoclinic.org/diseases-conditions/obesity/in-depth/obesity/art-20046284', description: 'Comprehensive guide from the Mayo Clinic on the medical treatment and management of obesity.', image: 'https://images.unsplash.com/photo-1627407008542-a8c6c968987b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }
+                ]
+            }
+        };
+
+        function getThumbnailUrl(videoId) {
+            return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        }
+
+        function renderContent(status) {
+            const contentDiv = document.getElementById('content');
+            const selectedResources = allResources[status] || allResources['all'];
+            let cardsHtml = `<div class="col-12 text-center"><h2 class="status-title mb-4" style="color: ${selectedResources.color};">${selectedResources.title}</h2></div>`;
+
+            // Helper to check if image loads
+            function imageTag(resource, imageUrl, fallbackHtml) {
+                return `<img src="${imageUrl}" class="card-img-top" alt="Thumbnail for ${resource.title}" onerror="this.parentElement.parentElement.style.display='none'">`;
+            }
+
+            cardsHtml += selectedResources.resources.map(resource => {
+                const isYoutube = resource.videoId;
+                const imageUrl = isYoutube ? getThumbnailUrl(resource.videoId) : resource.image;
+
+                if (isYoutube) {
+                    // YouTube video: show thumbnail, play inline on click
+                    return `
+                        <div class="col-md-6 col-lg-4 d-flex align-items-stretch">
+                            <div class="card h-100">
+                                <div class="card-link" style="cursor:pointer;" onclick="playVideo('${resource.videoId}', '${resource.title.replace(/'/g, "\'")}')">
+                                    ${imageTag(resource, imageUrl)}
+                                </div>
+                                <div class="card-body d-flex flex-column justify-content-between">
+                                    <h5 class="card-title fw-bold">${resource.title}</h5>
+                                    <p class="card-text">${resource.description}</p>
+                                    <button class="btn btn-outline-primary mt-auto" onclick="playVideo('${resource.videoId}', '${resource.title.replace(/'/g, "\'")}')">Play Video</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Article: show image, open modal with iframe on click
+                    return `
+                        <div class="col-md-6 col-lg-4 d-flex align-items-stretch">
+                            <div class="card h-100">
+                                <div class="card-link" style="cursor:pointer;" onclick="openArticleModal('${resource.url}', '${resource.title.replace(/'/g, "\'")}')">
+                                    ${imageTag(resource, imageUrl)}
+                                </div>
+                                <div class="card-body d-flex flex-column justify-content-between">
+                                    <h5 class="card-title fw-bold">${resource.title}</h5>
+                                    <p class="card-text">${resource.description}</p>
+                                    <button class="btn btn-outline-primary mt-auto" onclick="openArticleModal('${resource.url}', '${resource.title.replace(/'/g, "\'")}')">Read Article</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+
+            contentDiv.innerHTML = cardsHtml;
+
+            // Render all articles as embedded iframes below
+            const iframeArticlesDiv = document.getElementById('iframe-articles');
+            // Get all articles (not YouTube)
+            let allArticles = [];
+            Object.values(allResources).forEach(cat => {
+                cat.resources.forEach(res => {
+                    if (!res.videoId) {
+                        allArticles.push(res);
+                    }
+                });
+            });
+            // Remove duplicates by URL
+            const seen = new Set();
+            allArticles = allArticles.filter(a => {
+                if (seen.has(a.url)) return false;
+                seen.add(a.url); return true;
+            });
+            iframeArticlesDiv.innerHTML = allArticles.map(article => `
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-header" style="background: var(--primary-color); color: white;">
+                            ${article.title}
+                        </div>
+                        <div class="card-body p-0" style="height:350px;">
+                            <iframe src="${article.url}" style="width:100%;height:100%;border:none;" onerror="this.parentElement.parentElement.style.display='none'"></iframe>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateActiveButton(status) {
+            document.querySelectorAll('.filter-buttons .btn').forEach(button => {
+                button.classList.remove('active');
+            });
+            const activeBtn = document.querySelector(`.filter-buttons .btn[data-status="${status}"]`);
+            if(activeBtn) {
+                activeBtn.classList.add('active');
+            }
+        }
+
+        // Play YouTube video inline (replace card with embedded player)
+        function playVideo(videoId, title) {
+            const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = `
+                <div class="col-12 text-center mb-4">
+                    <h2 class="status-title" style="color: var(--primary-color);">${title}</h2>
+                </div>
+                <div class="col-12 d-flex justify-content-center">
+                    <div class="ratio ratio-16x9" style="max-width:800px;width:100%;">
+                        <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" title="${title}" allowfullscreen style="border-radius:15px;"></iframe>
+                    </div>
+                </div>
+                <div class="col-12 text-center mt-4">
+                    <button class="btn btn-outline-secondary" onclick="window.location.reload()">Back to Resources</button>
+                </div>
+            `;
+        }
+
+        // Open article in modal iframe
+        function openArticleModal(url, title) {
+            document.getElementById('articleIframe').src = url;
+            document.getElementById('articleModalLabel').textContent = title;
+            const modal = new bootstrap.Modal(document.getElementById('articleModal'));
+            modal.show();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const initialStatus = params.get('status') || 'all';
+
+            renderContent(initialStatus);
+            updateActiveButton(initialStatus);
+
+            document.querySelectorAll('.filter-buttons .btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const status = button.getAttribute('data-status');
+                    renderContent(status);
+                    updateActiveButton(status);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

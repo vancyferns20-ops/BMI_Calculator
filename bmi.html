@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>BMI Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom colors based on the "Tech-savvy and Futuristic" theme */
+        :root {
+            --color-dark: #2C2C6A;
+            --color-accent-dark: #5F59FF;
+            --color-accent-medium: #8985FF;
+            --color-accent-light: #99F2FF;
+            --color-light: #F0FFFF;
+            --font-main: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--color-light);
+            font-family: var(--font-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-container {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-top: 2rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--color-accent-dark);
+            box-shadow: 0 0 0 0.25rem rgba(95, 89, 255, 0.25);
+        }
+
+        .bmi-result-card {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-in, transform 0.5s ease-in;
+            margin-top: 2rem;
+        }
+
+        .bmi-result-card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result-badge {
+            font-size: 1rem;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50rem;
+        }
+
+        .category-normal { background-color: var(--color-accent-medium) !important; }
+        .category-underweight { background-color: var(--color-accent-light) !important; }
+        .category-overweight { background-color: var(--color-accent-dark) !important; }
+        .category-obese { background-color: var(--color-dark) !important; }
+
+        .progress-bar-container {
+            height: 15px;
+            border-radius: 10px;
+            background-color: #e9ecef;
+            position: relative;
+            margin-top: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .bmi-marker {
+            width: 12px;
+            height: 12px;
+            background-color: var(--color-dark);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%) translateX(-50%);
+            transition: left 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 0 8px rgba(0,0,0,0.3);
+        }
+
+        .bmi-range {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        .nav-link.active {
+            color: var(--color-accent-light) !important;
+        }
+
+        .bg-dark {
+            background-color: var(--color-dark) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--color-accent-dark);
+            border-color: var(--color-accent-dark);
+        }
+        .btn-primary:hover {
+            background-color: #726CFF;
+            border-color: #726CFF;
+        }
+        .btn-outline-secondary {
+            color: var(--color-dark);
+            border-color: var(--color-dark);
+        }
+        .btn-outline-secondary:hover {
+            color: #fff;
+            background-color: var(--color-dark);
+        }
+
+        footer {
+            background: var(--color-dark);
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--color-accent-dark);
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand text-light" href="#" onclick="showSection('bmi-section')">BMI</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item mx-2"><a class="nav-link text-light" href="./home.html">Home</a></li>
+                    <li class="nav-item mx-2"><a class="nav-link text-light active" href="./bmi.html" onclick="showSection('bmi-section')">BMI Calculator</a></li>
+                    <li class="nav-item mx-2"><a class="nav-link text-light" href="./blogs.html">Blogs & Articles</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div class="container my-5 main-content">
+
+        <div id="home-section" class="section fade-in">
+            <div class="card-container mx-auto text-center" style="max-width: 600px;">
+                <h2 class="mb-3">Welcome to the BMI Calculator</h2>
+                <p class="lead">Check your Body Mass Index and learn more about your health journey. A healthy lifestyle starts with small, informed steps.</p>
+                <hr class="my-4">
+                <p>Ready to start? Click on the "BMI Calculator" tab to get started.</p>
+                <button class="btn btn-primary btn-lg mt-3" onclick="showSection('bmi-section')">Calculate Your BMI</button>
+            </div>
+        </div>
+
+        <div id="bmi-section" class="section fade-in">
+            <div class="card-container mx-auto" style="max-width: 600px;">
+                <h2 class="mb-4 text-center">Check Your BMI</h2>
+                
+                <ul class="nav nav-tabs mb-4" id="bmiTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="metric-tab" data-bs-toggle="tab" data-bs-target="#metric" type="button" role="tab" aria-controls="metric" aria-selected="true">Metric Units</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="us-tab" data-bs-toggle="tab" data-bs-target="#us" type="button" role="tab" aria-controls="us" aria-selected="false">US Units</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="bmiTabContent">
+                    <div class="tab-pane fade show active" id="metric" role="tabpanel" aria-labelledby="metric-tab">
+                        <div class="mb-3">
+                            <label for="height-metric" class="form-label">Height (in cm)</label>
+                            <input type="number" id="height-metric" class="form-control" placeholder="e.g. 170" min="50" max="300" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="weight-metric" class="form-label">Weight (in kg)</label>
+                            <input type="number" id="weight-metric" class="form-control" placeholder="e.g. 65" min="10" max="300" required>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="us" role="tabpanel" aria-labelledby="us-tab">
+                        <div class="mb-3">
+                            <label for="height-us-ft" class="form-label">Height (ft & in)</label>
+                            <div class="row g-2">
+                                <div class="col">
+                                    <input type="number" class="form-control" id="height-us-ft" placeholder="ft">
+                                </div>
+                                <div class="col">
+                                    <input type="number" class="form-control" id="height-us-in" placeholder="in">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="weight-us" class="form-label">Weight (lbs)</label>
+                            <input type="number" class="form-control" id="weight-us" placeholder="e.g., 160">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary w-100 mt-3" onclick="calculateBMI()">Calculate BMI</button>
+            </div>
+            
+            <div id="bmiResult" class="text-center mt-4">
+                <div class="bmi-result-card" id="result-card">
+                    <div class="result-body">
+                        <h4 class="mb-0">Your BMI is <strong id="bmi-value">--</strong></h4>
+                        <span class="badge text-white result-badge" id="bmi-status">Enter details</span>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                            <div class="bmi-marker" id="bmi-marker"></div>
+                        </div>
+                        <div class="bmi-range">
+                            <span>18.5</span>
+                            <span>25</span>
+                            <span>30</span>
+                            <span>40</span>
+                        </div>
+                        <hr class="my-4">
+                        <p class="mb-2"><strong>Healthy BMI range:</strong> 18.5 - 25 kg/m<sup>2</sup></p>
+                        <p class="mb-2"><strong>Healthy weight:</strong> <span id="healthy-weight-range">--</span></p>
+                        <button class="btn btn-outline-secondary mt-3" onclick="redirectToBlogs()">See Articles & Advice</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="blogs-section" class="section fade-in">
+            <div class="card-container mx-auto" style="max-width: 800px;">
+                <h2 class="mb-4 text-center">Blogs & Articles</h2>
+                <div id="blogMessage" class="alert d-none"></div>
+                <div id="articlesContainer" class="row g-4">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 BMI Calculator | Designed for Health & Wellness
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sections = document.querySelectorAll('.section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        const allArticles = {
+            'all': [
+                { title: 'The Benefits of Regular Exercise', text: 'Discover how incorporating physical activity into your daily routine can improve your overall health and well-being. From cardiovascular health to mental clarity, the benefits are endless.' },
+                { title: 'Understanding a Balanced Diet', text: 'Learn the principles of a balanced diet and how to fuel your body with the right nutrients. We\'ll cover macros, micros, and simple tips for healthier eating.' },
+                { title: 'Stress Management for a Healthier Life', text: 'Stress can have a significant impact on your physical health. Find out simple techniques like mindfulness and meditation to manage stress effectively.' },
+                { title: 'The Importance of Quality Sleep', text: 'Sleep is a cornerstone of health. This article explores how sleep affects your weight, mood, and cognitive function, and offers tips for better sleep hygiene.' }
+            ],
+            'underweight': [
+                { title: 'Healthy Ways to Gain Weight', text: 'For those who are underweight, focusing on nutrient-dense foods is key. This article provides safe and effective strategies to help you reach a healthy weight.' },
+                { title: 'Muscle Building for a Stronger You', text: 'Building muscle mass can be a healthy way to increase your weight. Learn about exercises and nutrition plans designed to help you get stronger.' },
+                { title: 'Foods That Help You Gain Weight', text: 'Discover which foods are packed with calories and nutrients to support your weight gain goals without compromising on health.' }
+            ],
+            'normal': [
+                { title: 'Maintaining a Healthy Lifestyle', text: 'Congratulations on being in the normal range! This article offers tips on how to maintain your current weight and continue your healthy journey.' },
+                { title: 'The Power of Consistency', text: 'Consistency is key to long-term health. Learn how to stick to your diet and exercise routines to stay in the healthy BMI range.' }
+            ],
+            'overweight': [
+                { title: 'Your First Steps to Weight Loss', text: 'Feeling overwhelmed? This guide breaks down the first steps to safe and sustainable weight loss, focusing on small, manageable changes.' },
+                { title: 'The Role of Diet and Exercise', text: 'Understand how a combination of a healthy diet and regular physical activity is the most effective way to manage your weight.' },
+                { title: 'Portion Control Made Simple', text: 'Struggling with portion sizes? This article provides simple, visual tips to help you manage your food intake without feeling deprived.' }
+            ],
+            'obese': [
+                { title: 'Starting Your Weight Management Journey', text: 'This article provides an in-depth look at starting a weight management program, emphasizing the importance of consulting a healthcare professional.' },
+                { title: 'Understanding Obesity and Health Risks', text: 'Learn more about the health implications of obesity and how weight management can significantly reduce those risks.' }
+            ]
+        };
+
+        function showSection(sectionId) {
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+            updateActiveNavLink(sectionId);
+        }
+
+        function updateActiveNavLink(sectionId) {
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            const link = document.querySelector(`a[onclick="showSection('${sectionId}')"]`);
+            if (link) {
+                link.classList.add('active');
+            }
+        }
+
+        function calculateBMI() {
+            const metricTab = document.getElementById('metric-tab').classList.contains('active');
+            let height, weight, isMetric;
+
+            if (metricTab) {
+                height = parseFloat(document.getElementById('height-metric').value) / 100;
+                weight = parseFloat(document.getElementById('weight-metric').value);
+                isMetric = true;
+            } else {
+                const ft = parseFloat(document.getElementById('height-us-ft').value) || 0;
+                const inches = parseFloat(document.getElementById('height-us-in').value) || 0;
+                const lbs = parseFloat(document.getElementById('weight-us').value);
+
+                height = (ft * 12 + inches) * 0.0254;
+                weight = lbs * 0.453592;
+                isMetric = false;
+            }
+
+            if (!height || !weight || height <= 0 || weight <= 0) {
+                alert('Please enter valid height and weight.');
+                return;
+            }
+
+            loadingOverlay.style.display = 'flex';
+
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+
+                const bmi = (weight / (height * height)).toFixed(1);
+                let category, badgeClass, message;
+                let minWeight, maxWeight;
+
+                if (bmi < 18.5) {
+                    category = "Underweight";
+                    badgeClass = "category-underweight";
+                    message = "Your BMI suggests you may be <strong>Underweight</strong>. Consider speaking with a healthcare professional to create a plan for healthy weight gain.";
+                } else if (bmi < 25) {
+                    category = "Normal";
+                    badgeClass = "category-normal";
+                    message = "Your BMI is in the <strong>Normal</strong> range. Keep up the good work with a balanced diet and regular exercise!";
+                } else if (bmi < 30) {
+                    category = "Overweight";
+                    badgeClass = "category-overweight";
+                    message = "Your BMI suggests you are <strong>Overweight</strong>. Small changes to diet and exercise can make a big difference. Check out our blogs for tips!";
+                } else {
+                    category = "Obese";
+                    badgeClass = "category-obese";
+                    message = "Your BMI suggests you are in the <strong>Obese</strong> range. Consulting a doctor or nutritionist is a great next step to start your weight management journey.";
+                }
+
+                minWeight = (18.5 * height * height);
+                maxWeight = (25 * height * height);
+                if (!isMetric) {
+                    minWeight = (minWeight * 2.20462).toFixed(1) + ' lbs';
+                    maxWeight = (maxWeight * 2.20462).toFixed(1) + ' lbs';
+                } else {
+                    minWeight = minWeight.toFixed(1) + ' kg';
+                    maxWeight = maxWeight.toFixed(1) + ' kg';
+                }
+
+                const resultCard = document.getElementById('result-card');
+                resultCard.classList.remove('show');
+                
+                // Update content before showing card
+                document.getElementById('bmi-value').textContent = bmi;
+                document.getElementById('bmi-status').textContent = category;
+                document.getElementById('bmi-status').className = `badge text-white result-badge ${badgeClass}`;
+                document.getElementById('healthy-weight-range').textContent = `${minWeight} - ${maxWeight}`;
+
+                // Animate progress bar
+                const minBmiRange = 16;
+                const maxBmiRange = 40;
+                const normalizedBmi = Math.min(Math.max(bmi, minBmiRange), maxBmiRange);
+                const progress = ((normalizedBmi - minBmiRange) / (maxBmiRange - minBmiRange)) * 100;
+
+                const progressBar = document.getElementById('progress-bar-fill');
+                const bmiMarker = document.getElementById('bmi-marker');
+
+                progressBar.style.transition = 'none';
+                progressBar.style.width = '0%';
+                bmiMarker.style.transition = 'none';
+                bmiMarker.style.left = '0%';
+
+                setTimeout(() => {
+                    progressBar.style.transition = 'width 0.7s cubic-bezier(0.25, 1, 0.5, 1)';
+                    bmiMarker.style.transition = 'left 0.7s cubic-bezier(0.25, 1, 0.5, 1)';
+                    progressBar.style.width = progress + '%';
+                    bmiMarker.style.left = progress + '%';
+                }, 10);
+
+                const normalStart = ((18.5 - minBmiRange) / (maxBmiRange - minBmiRange)) * 100;
+                const normalEnd = ((25 - minBmiRange) / (maxBmiRange - minBmiRange)) * 100;
+                const overweightEnd = ((30 - minBmiRange) / (maxBmiRange - minBmiRange)) * 100;
+                const obeseStart = ((30 - minBmiRange) / (maxBmiRange - minBmiRange)) * 100;
+                
+                progressBar.style.background = `linear-gradient(to right, ${getComputedStyle(document.documentElement).getPropertyValue('--color-accent-light')} ${normalStart}%, ${getComputedStyle(document.documentElement).getPropertyValue('--color-accent-medium')} ${normalStart}%, ${getComputedStyle(document.documentElement).getPropertyValue('--color-accent-medium')} ${normalEnd}%, ${getComputedStyle(document.documentElement).getPropertyValue('--color-accent-dark')} ${normalEnd}%, ${getComputedStyle(document.documentElement).getPropertyValue('--color-accent-dark')} ${obeseStart}%, ${getComputedStyle(document.documentElement).getPropertyValue('--color-dark')} ${obeseStart}%)`;
+
+                setTimeout(() => {
+                    resultCard.classList.add('show');
+                }, 100);
+
+            }, 500); // 500ms delay
+        }
+
+        function renderBlogContent(category) {
+            const articlesContainer = document.getElementById('articlesContainer');
+            const blogMessageDiv = document.getElementById('blogMessage');
+            const articles = allArticles[category] || allArticles['all'];
+
+            let blogMessageText;
+            if (category === 'underweight') {
+                blogMessageText = "Based on your BMI, here are some resources to help you safely gain weight.";
+            } else if (category === 'normal') {
+                blogMessageText = "Based on your BMI, here are some resources to help you maintain your healthy weight.";
+            } else if (category === 'overweight') {
+                blogMessageText = "Based on your BMI, here are some resources to help you with weight management.";
+            } else if (category === 'obese') {
+                blogMessageText = "Based on your BMI, here are some resources for managing obesity and its related health risks.";
+            } else {
+                blogMessageText = "Here are some general health and wellness articles.";
+            }
+
+            blogMessageDiv.innerHTML = `<p>${blogMessageText}</p>`;
+            blogMessageDiv.className = `alert mt-4 d-block`;
+
+            articlesContainer.innerHTML = articles.map(article => `
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">${article.title}</h5>
+                            <p class="card-text">${article.text}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function redirectToBlogs() {
+            const bmiStatusElement = document.getElementById('bmi-status');
+            const category = bmiStatusElement.textContent.toLowerCase().replace(' ', '');
+            renderBlogContent(category);
+            showSection('blogs-section');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showSection('bmi-section');
+        });
+    </script>
+</body>
+</html>
